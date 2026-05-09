@@ -28,6 +28,10 @@ sites:
     url: https://job-boards.greenhouse.io/ogilvyuk
     selector: "tr.job-post a"
 
+  - name: Koto
+    url: https://koto.com/careers
+    selector: "a[href^='/careers/']"
+
 # --- Examples (uncomment and edit as needed) ---
 #
 # - name: Anthropic

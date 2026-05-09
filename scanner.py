@@ -52,11 +52,25 @@ def fetch(url):
     return r.text
 
 
+_NOISE_SUFFIXES = {"apply", "view", "learn", "more", "details", "read"}
+
+
+def clean_title(text: str) -> str:
+    words = text.split()
+    while words and words[-1].lower().strip(".,:;") in _NOISE_SUFFIXES:
+        words.pop()
+    n = len(words)
+    if n >= 2 and n % 2 == 0 and words[:n // 2] == words[n // 2:]:
+        words = words[:n // 2]
+    return " ".join(words)
+
+
 def extract_jobs(html, selector, base_url):
     soup = BeautifulSoup(html, "html.parser")
     jobs = {}
     for el in soup.select(selector):
-        title = " ".join(el.get_text(" ", strip=True).split())
+        raw = " ".join(el.get_text(" ", strip=True).split())
+        title = clean_title(raw)
         href = el.get("href")
         if not href or not title:
             continue
