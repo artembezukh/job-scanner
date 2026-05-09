@@ -1,0 +1,44 @@
+# Add career pages to track here, then commit.
+# The next scheduled run picks them up automatically.
+#
+# Each site needs three fields:
+#   name      - human-readable label (also the unique key in seen.json)
+#   url       - the page to scrape
+#   selector  - CSS selector that matches each individual job link
+#
+# Optional:
+#   base_url  - used to resolve relative href values; defaults to `url`
+#
+# How to find the selector:
+#   1. Open the career page in your browser
+#   2. Right-click a job title -> Inspect
+#   3. In devtools, find a CSS class/attribute common to ALL job rows
+#      (e.g. `.opening a`, `a.posting-title`, `a[href*='/jobs/']`)
+#   4. Test it: paste `document.querySelectorAll('YOUR_SELECTOR').length` into
+#      the browser console - it should match the number of jobs on the page.
+#
+# Heads-up about JS-rendered pages:
+#   Many modern career pages load jobs with JavaScript after the initial HTML.
+#   This scraper only sees the raw HTML. If your selector matches 0 jobs even
+#   though the site clearly has openings, look for the underlying ATS link
+#   (Greenhouse, Lever, Ashby, Workday, etc.) - those usually serve real HTML.
+
+sites: []
+
+# --- Examples (uncomment and edit as needed) ---
+#
+# - name: Anthropic
+#   url: https://www.anthropic.com/jobs
+#   selector: "a[href*='/jobs/']"
+#
+# - name: Some Co (Greenhouse)
+#   url: https://boards.greenhouse.io/examplecompany
+#   selector: ".opening a"
+#
+# - name: Some Co (Lever)
+#   url: https://jobs.lever.co/examplecompany
+#   selector: "a.posting-title"
+#
+# - name: Some Co (Ashby)
+#   url: https://jobs.ashbyhq.com/examplecompany
+#   selector: "a[href*='/examplecompany/']"
