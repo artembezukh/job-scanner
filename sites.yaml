@@ -23,7 +23,10 @@
 #   though the site clearly has openings, look for the underlying ATS link
 #   (Greenhouse, Lever, Ashby, Workday, etc.) - those usually serve real HTML.
 
-sites: []
+sites:
+  - name: Ogilvy UK
+    url: https://job-boards.greenhouse.io/ogilvyuk
+    selector: "tr.job-post a"
 
 # --- Examples (uncomment and edit as needed) ---
 #
