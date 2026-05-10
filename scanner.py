@@ -21,8 +21,12 @@ SEEN_FILE = ROOT / "seen.json"
 TG_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 TG_CHAT = os.environ.get("TELEGRAM_CHAT_ID")
 
-UA = "Mozilla/5.0 (compatible; JobScanner/1.0; +https://github.com/artembezukh/job-scanner)"
+UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 TIMEOUT = 30
+COOKIE_BUTTON_TEXTS = ("Accept All", "Accept all", "Accept", "I agree",
+                       "Allow all", "Got it", "OK", "I accept",
+                       "Agree and continue", "Allow cookies")
 
 
 def now() -> str:
@@ -83,20 +87,39 @@ def _close_browser():
         _pw = None
 
 
-def fetch_js(url, wait_selector=None, wait_ms=2000):
+def fetch_js(url, wait_selector=None, wait_ms=3000):
     """Render a page with a real browser before reading the HTML."""
+    import re as _re
     browser = _get_browser()
-    ctx = browser.new_context(user_agent=UA, viewport={"width": 1280, "height": 900})
+    ctx = browser.new_context(
+        user_agent=UA,
+        viewport={"width": 1280, "height": 900},
+        locale="en-GB",
+        extra_http_headers={"Accept-Language": "en-GB,en;q=0.9"},
+    )
     page = ctx.new_page()
     try:
         page.goto(url, wait_until="domcontentloaded", timeout=45000)
+        page.wait_for_timeout(2000)
+
+        # Dismiss any visible cookie / consent button so it doesn't block content
+        for txt in COOKIE_BUTTON_TEXTS:
+            try:
+                page.get_by_role("button", name=_re.compile(f"^{_re.escape(txt)}$", _re.I)).first.click(timeout=1500)
+                break
+            except Exception:
+                continue
+
+        # Wait for the actual job content to appear, then settle
         if wait_selector:
             try:
-                page.wait_for_selector(wait_selector, timeout=20000)
+                page.wait_for_selector(wait_selector, timeout=25000)
             except Exception:
                 pass
-        else:
-            page.wait_for_load_state("networkidle", timeout=20000)
+        try:
+            page.wait_for_load_state("networkidle", timeout=15000)
+        except Exception:
+            pass
         if wait_ms:
             page.wait_for_timeout(wait_ms)
         return page.content()
