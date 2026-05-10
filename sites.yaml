@@ -32,6 +32,12 @@ sites:
     url: https://koto.com/careers
     selector: "a[href^='/careers/']"
 
+  - name: Leo Burnett (global)
+    url: https://careers.publicisgroupe.com/leoburnett/jobs
+    selector: "a.job-title-link"
+    render: js
+    wait_selector: "a.job-title-link"
+
 # --- Examples (uncomment and edit as needed) ---
 #
 # - name: Anthropic
