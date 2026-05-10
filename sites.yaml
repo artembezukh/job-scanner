@@ -242,6 +242,20 @@ sites:
     render: js
     wait_selector: "a[href*='/j/']"
 
+  # --- Round 4: more independents + design ---
+
+  - name: Made Thought
+    url: https://job-boards.greenhouse.io/madethought
+    selector: "tr.job-post a"
+
+  - name: Known
+    url: https://job-boards.greenhouse.io/known
+    selector: "tr.job-post a"
+
+  - name: M+C Saatchi Group
+    url: https://mcsaatchiltd.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
 # --- Examples (uncomment and edit as needed) ---
 #
 # - name: Anthropic
