@@ -179,6 +179,69 @@ sites:
     url: https://digitalvoices-1653410641.teamtailor.com/
     selector: "a[href*='/jobs/']"
 
+  # --- Round 3: more London marketing/creative/healthcare/influencer agencies ---
+
+  # Greenhouse boards
+  - name: OLIVER Agency
+    url: https://job-boards.greenhouse.io/oliver
+    selector: "tr.job-post a"
+
+  - name: Grey London
+    url: https://job-boards.greenhouse.io/greylondon
+    selector: "tr.job-post a"
+
+  - name: Landor
+    url: https://job-boards.greenhouse.io/landor
+    selector: "tr.job-post a"
+
+  - name: NVE Experience Agency
+    url: https://job-boards.greenhouse.io/nve
+    selector: "tr.job-post a"
+
+  - name: Inizio Ignite (STEM Healthcare)
+    url: https://boards.greenhouse.io/stemhealthcare
+    selector: "tr.job-post a"
+
+  - name: HCEsquared
+    url: https://boards.greenhouse.io/hcesquared
+    selector: "tr.job-post a"
+
+  # Teamtailor boards
+  - name: The MISSION Group
+    url: https://themissiongroup.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
+  - name: Influencer
+    url: https://influencer.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
+  - name: The Growth Foundation
+    url: https://thegrowthfoundation-1640252175.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
+  - name: Chapter 2
+    url: https://chapter2.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
+  # Workable (need JS rendering)
+  - name: DMS (Digital Media Services)
+    url: https://apply.workable.com/digitalmediaservices/
+    selector: "a[href*='/j/']"
+    render: js
+    wait_selector: "a[href*='/j/']"
+
+  - name: ITG (Inspired Thinking Group)
+    url: https://apply.workable.com/itg/
+    selector: "a[href*='/j/']"
+    render: js
+    wait_selector: "a[href*='/j/']"
+
+  - name: Healthcare Research Worldwide
+    url: https://apply.workable.com/hrw/
+    selector: "a[href*='/j/']"
+    render: js
+    wait_selector: "a[href*='/j/']"
+
 # --- Examples (uncomment and edit as needed) ---
 #
 # - name: Anthropic
