@@ -280,20 +280,6 @@ sites:
     url: https://allresponsemedia.teamtailor.com/
     selector: "a[href*='/jobs/']"
 
-  - name: Rosa Paris (France)
-    url: https://rosaparis.teamtailor.com/
-    selector: "a[href*='/jobs/']"
-
-  - name: Brut. (France)
-    url: https://brutfrance.teamtailor.com/
-    selector: "a[href*='/jobs/']"
-
-  - name: LOOP (Austria)
-    url: https://apply.workable.com/followloop/
-    selector: "a[href*='/j/']"
-    render: js
-    wait_selector: "a[href*='/j/']"
-
 # --- Examples (uncomment and edit as needed) ---
 #
 # - name: Anthropic
