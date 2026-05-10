@@ -280,5 +280,50 @@
         "first_seen": "2026-05-10T00:23:12+00:00"
       }
     }
+  },
+  "Leo Burnett (global)": {
+    "first_tracked": "2026-05-10T00:32:06+00:00",
+    "jobs": {
+      "https://careers.publicisgroupe.com/leoburnett/jobs/105868?lang=en-us&previousLocale=en-US": {
+        "title": "AUC Creatives",
+        "first_seen": "2026-05-10T00:32:06+00:00"
+      },
+      "https://careers.publicisgroupe.com/leoburnett/jobs/149551?lang=en-us&previousLocale=en-US": {
+        "title": "AUC Communications & Project Management",
+        "first_seen": "2026-05-10T00:32:06+00:00"
+      },
+      "https://careers.publicisgroupe.com/leoburnett/jobs/150026?lang=es-mx&previousLocale=en-US": {
+        "title": "Junior Copywriter",
+        "first_seen": "2026-05-10T00:32:06+00:00"
+      },
+      "https://careers.publicisgroupe.com/leoburnett/jobs/150024?lang=es-mx&previousLocale=en-US": {
+        "title": "Multimedia Designer",
+        "first_seen": "2026-05-10T00:32:06+00:00"
+      },
+      "https://careers.publicisgroupe.com/leoburnett/jobs/133840?lang=en-us&previousLocale=en-US": {
+        "title": "Influencer Marketing Specialist",
+        "first_seen": "2026-05-10T00:32:06+00:00"
+      },
+      "https://careers.publicisgroupe.com/leoburnett/jobs/133840?lang=es-mx&previousLocale=en-US": {
+        "title": "Influencer Marketing Specialist",
+        "first_seen": "2026-05-10T00:32:06+00:00"
+      },
+      "https://careers.publicisgroupe.com/leoburnett/jobs/149387?lang=es-mx&previousLocale=en-US": {
+        "title": "Mobile & Web Analytics",
+        "first_seen": "2026-05-10T00:32:06+00:00"
+      },
+      "https://careers.publicisgroupe.com/leoburnett/jobs/149194?lang=es-mx&previousLocale=en-US": {
+        "title": "Planner Estratégico",
+        "first_seen": "2026-05-10T00:32:06+00:00"
+      },
+      "https://careers.publicisgroupe.com/leoburnett/jobs/143295?lang=en-us&previousLocale=en-US": {
+        "title": "Senior Copywriter",
+        "first_seen": "2026-05-10T00:32:06+00:00"
+      },
+      "https://careers.publicisgroupe.com/leoburnett/jobs/148166?lang=en-us&previousLocale=en-US": {
+        "title": "Account Executive",
+        "first_seen": "2026-05-10T00:32:06+00:00"
+      }
+    }
   }
 }
