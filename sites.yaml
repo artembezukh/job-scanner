@@ -256,6 +256,22 @@ sites:
     url: https://mcsaatchiltd.teamtailor.com/
     selector: "a[href*='/jobs/']"
 
+  # --- International agencies with London offices ---
+
+  - name: Sid Lee (Canada)
+    url: https://boards.greenhouse.io/embed/job_board?for=sidlee
+    selector: "tr.job-post a"
+
+  - name: BETC (France/Havas)
+    url: https://betc.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
+  - name: R/GA (US)
+    url: https://boards.greenhouse.io/rga
+    selector: "a[href*='/careers/']"
+    render: js
+    wait_selector: "a[href*='/careers/']"
+
 # --- Examples (uncomment and edit as needed) ---
 #
 # - name: Anthropic
