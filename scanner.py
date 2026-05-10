@@ -87,6 +87,11 @@ def _close_browser():
         _pw = None
 
 
+_EMPTY_MARKERS = ("no job openings", "no current openings", "no open positions",
+                  "no live roles", "no openings at the moment", "no vacancies",
+                  "no roles available", "we have no live roles")
+
+
 def fetch_js(url, wait_selector=None, wait_ms=3000):
     """Render a page with a real browser before reading the HTML."""
     import re as _re
@@ -110,14 +115,21 @@ def fetch_js(url, wait_selector=None, wait_ms=3000):
             except Exception:
                 continue
 
+        page.wait_for_timeout(1500)
+
+        # Fast path: page already declares it has no openings — skip long waits
+        early = page.content().lower()
+        if any(m in early for m in _EMPTY_MARKERS):
+            return page.content()
+
         # Wait for the actual job content to appear, then settle
         if wait_selector:
             try:
-                page.wait_for_selector(wait_selector, timeout=25000)
+                page.wait_for_selector(wait_selector, timeout=15000)
             except Exception:
                 pass
         try:
-            page.wait_for_load_state("networkidle", timeout=15000)
+            page.wait_for_load_state("networkidle", timeout=10000)
         except Exception:
             pass
         if wait_ms:
@@ -206,7 +218,16 @@ def scan_site(site, seen):
         return
 
     current = extract_jobs(html, selector, base)
-    if not current:
+
+    # Tell apart "site has no openings right now" from "selector is wrong / page broken"
+    page_text = " ".join(BeautifulSoup(html, "html.parser").get_text(" ", strip=True).split()).lower()
+    explicitly_empty = any(p in page_text for p in (
+        "no job openings", "no current openings", "no open positions",
+        "no live roles", "no openings at the moment", "no vacancies",
+        "no roles available", "we have no live roles",
+    ))
+
+    if not current and not explicitly_empty:
         print("  selector matched 0 jobs - check your selector or the site might be JS-rendered")
         soup = BeautifulSoup(html, "html.parser")
         anchors = soup.find_all("a", href=True)
@@ -230,12 +251,22 @@ def scan_site(site, seen):
             "jobs": {link: {"title": title, "first_seen": now()}
                      for link, title in current.items()},
         }
-        telegram_send(
-            f"<b>Now tracking: {escape(name)}</b>\n"
-            f"Baseline of {len(current)} job(s) recorded. "
-            f"You will only get pings for new postings from now on."
-        )
-        print(f"  baseline: {len(current)} jobs")
+        if current:
+            lines = [f"<b>Now tracking: {escape(name)}</b>",
+                     f"Baseline of {len(current)} job(s) recorded. "
+                     f"You will only get pings for new postings from now on."]
+            if len(current) <= 5:
+                lines.append("")
+                for link, title in current.items():
+                    lines.append(f'- <a href="{escape(link)}">{escape(title)}</a>')
+            telegram_send("\n".join(lines))
+            print(f"  baseline: {len(current)} jobs")
+        else:
+            telegram_send(
+                f"<b>Now tracking: {escape(name)}</b>\n"
+                f"No openings right now. You will be pinged when one appears."
+            )
+            print("  baseline: 0 jobs (empty board, will track for new ones)")
         return
 
     known = site_seen["jobs"]

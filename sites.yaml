@@ -87,6 +87,98 @@ sites:
     render: js
     wait_selector: "a[href*='/j/']"
 
+  # --- Round 2: holding companies + active PR + currently-empty Workable ---
+
+  - name: WPP (group)
+    url: https://job-boards.greenhouse.io/wpp
+    selector: "tr.job-post a"
+
+  - name: WPP Media
+    url: https://job-boards.greenhouse.io/wppmedia
+    selector: "tr.job-post a"
+
+  - name: Mediahub London
+    url: https://job-boards.greenhouse.io/mediahubldn
+    selector: "tr.job-post a"
+
+  - name: BPCM
+    url: https://apply.workable.com/bpcm/
+    selector: "a[href*='/j/']"
+    render: js
+    wait_selector: "a[href*='/j/']"
+
+  - name: Convosphere
+    url: https://apply.workable.com/convosphere/
+    selector: "a[href*='/j/']"
+    render: js
+    wait_selector: "a[href*='/j/']"
+
+  # Workable boards currently with no openings — selector still works,
+  # they will pop up the moment a job is posted.
+  - name: Kota
+    url: https://apply.workable.com/kota/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: Rehab
+    url: https://apply.workable.com/rehab/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: Ignite Hospitality
+    url: https://apply.workable.com/ignite-hospitality/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: agenda21 Digital
+    url: https://apply.workable.com/agenda21-digital/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: LDX Digital
+    url: https://apply.workable.com/ldx-digital/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: Luxus Worldwide
+    url: https://apply.workable.com/luxus/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: The Creative Emporium
+    url: https://apply.workable.com/the-creative-emporium-tce/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: Startup Voyager
+    url: https://apply.workable.com/startupvoyager/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: Fever PR
+    url: https://apply.workable.com/fever-pr/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: Media Zoo
+    url: https://apply.workable.com/media-zoo-2/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: Upbeat
+    url: https://apply.workable.com/upbeat/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: PRX
+    url: https://apply.workable.com/prx/
+    selector: "a[href*='/j/']"
+    render: js
+
+  - name: Digital Voices
+    url: https://digitalvoices-1653410641.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
 # --- Examples (uncomment and edit as needed) ---
 #
 # - name: Anthropic
