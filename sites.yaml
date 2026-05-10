@@ -280,6 +280,12 @@ sites:
     url: https://allresponsemedia.teamtailor.com/
     selector: "a[href*='/jobs/']"
 
+  - name: YKONE (France + London office)
+    url: https://apply.workable.com/ykone/
+    selector: "a[href*='/j/']"
+    render: js
+    wait_selector: "a[href*='/j/']"
+
 # --- Examples (uncomment and edit as needed) ---
 #
 # - name: Anthropic
