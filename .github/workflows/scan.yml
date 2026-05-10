@@ -52,7 +52,18 @@ jobs:
           git add seen.json
           if git diff --cached --quiet; then
             echo "No changes to commit."
-          else
-            git commit -m "Update seen jobs"
-            git push
+            exit 0
           fi
+          git commit -m "Update seen jobs"
+          # Retry push up to 5 times — handles race with manual pushes
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "Pushed on attempt $i"
+              exit 0
+            fi
+            echo "Push attempt $i failed; rebasing on latest origin/main and retrying..."
+            git pull --rebase --strategy-option=ours origin main || git rebase --abort
+            sleep $((i * 2))
+          done
+          echo "Failed to push after 5 attempts" >&2
+          exit 1
