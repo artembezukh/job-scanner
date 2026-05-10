@@ -52,6 +52,58 @@ def fetch(url):
     return r.text
 
 
+_pw = None
+_browser = None
+
+
+def _get_browser():
+    """Lazy-init a single shared Playwright browser, reused across all JS sites."""
+    global _pw, _browser
+    if _browser is not None:
+        return _browser
+    from playwright.sync_api import sync_playwright
+    _pw = sync_playwright().start()
+    _browser = _pw.chromium.launch(args=["--no-sandbox", "--disable-dev-shm-usage"])
+    return _browser
+
+
+def _close_browser():
+    global _pw, _browser
+    if _browser is not None:
+        try:
+            _browser.close()
+        except Exception:
+            pass
+        _browser = None
+    if _pw is not None:
+        try:
+            _pw.stop()
+        except Exception:
+            pass
+        _pw = None
+
+
+def fetch_js(url, wait_selector=None, wait_ms=2000):
+    """Render a page with a real browser before reading the HTML."""
+    browser = _get_browser()
+    ctx = browser.new_context(user_agent=UA, viewport={"width": 1280, "height": 900})
+    page = ctx.new_page()
+    try:
+        page.goto(url, wait_until="domcontentloaded", timeout=45000)
+        if wait_selector:
+            try:
+                page.wait_for_selector(wait_selector, timeout=20000)
+            except Exception:
+                pass
+        else:
+            page.wait_for_load_state("networkidle", timeout=20000)
+        if wait_ms:
+            page.wait_for_timeout(wait_ms)
+        return page.content()
+    finally:
+        ctx.close()
+
+
 _NOISE_SUFFIXES = {"apply", "view", "learn", "more", "details", "read"}
 
 
@@ -104,9 +156,15 @@ def scan_site(site, seen):
     selector = site["selector"]
     base = site.get("base_url", url)
 
-    print(f"[{name}]")
+    render = (site.get("render") or "static").lower()
+    wait_selector = site.get("wait_selector")
+
+    print(f"[{name}] ({render})")
     try:
-        html = fetch(url)
+        if render in ("js", "playwright", "browser"):
+            html = fetch_js(url, wait_selector=wait_selector)
+        else:
+            html = fetch(url)
     except Exception as e:
         print(f"  fetch failed: {e}", file=sys.stderr)
         return
@@ -114,6 +172,19 @@ def scan_site(site, seen):
     current = extract_jobs(html, selector, base)
     if not current:
         print("  selector matched 0 jobs - check your selector or the site might be JS-rendered")
+        soup = BeautifulSoup(html, "html.parser")
+        anchors = soup.find_all("a", href=True)
+        print(f"  debug: rendered HTML has {len(anchors)} <a> tags. Sample hrefs:")
+        seen_h = set()
+        for a in anchors:
+            h = a["href"]
+            if h in seen_h or h.startswith("#") or h.startswith("javascript:"):
+                continue
+            seen_h.add(h)
+            txt = " ".join(a.get_text(" ", strip=True).split())[:60]
+            print(f"    {h[:90]}  | text: {txt}")
+            if len(seen_h) >= 25:
+                break
         return
 
     site_seen = seen.get(name)
@@ -162,6 +233,7 @@ def main():
             print(f"  unexpected error on '{site.get('name', '?')}': {e}", file=sys.stderr)
 
     save_seen(seen)
+    _close_browser()
     print(f"\nDone: scanned {len(sites)} site(s) at {now()}")
 
 

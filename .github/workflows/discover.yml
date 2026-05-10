@@ -1,0 +1,45 @@
+name: Discover selector
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "URL of careers page to inspect"
+        required: true
+      wait_selector:
+        description: "Optional CSS selector to wait for before reading HTML"
+        required: false
+        default: ""
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-v1
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: python -m playwright install --with-deps chromium
+
+      - name: Install Playwright system deps (when cached)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: python -m playwright install-deps chromium
+
+      - run: python discover.py
+        env:
+          DISCOVER_URL: ${{ inputs.url }}
+          DISCOVER_WAIT_SELECTOR: ${{ inputs.wait_selector }}
