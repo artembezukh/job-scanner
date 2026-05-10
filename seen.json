@@ -167,5 +167,118 @@
         "first_seen": "2026-05-09T23:34:53+00:00"
       }
     }
+  },
+  "Koto": {
+    "first_tracked": "2026-05-10T00:23:12+00:00",
+    "jobs": {
+      "https://koto.com/careers/7237157-senior-3d-motion-designer": {
+        "title": "Senior 3D Motion Designer London",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7198548-midweight-designer": {
+        "title": "Midweight Designer New York",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/5854094-senior-designer": {
+        "title": "Senior Designer Los Angeles",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/5699651-client-director": {
+        "title": "Client Director Los Angeles",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7181515-senior-motion-designer": {
+        "title": "Senior Motion Designer London",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/4920220-midweight-designer": {
+        "title": "Midweight Designer London",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/4890001-senior-designer": {
+        "title": "Senior Designer London",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7085591-design-director": {
+        "title": "Design Director Los Angeles",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/6979385-senior-strategist": {
+        "title": "Senior Strategist Los Angeles",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/6849057-design-engineer": {
+        "title": "Design Engineer London",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/6846116-senior-digital-producer": {
+        "title": "Senior Digital Producer New York",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7684563-senior-motion-designer": {
+        "title": "Senior Motion Designer Berlin",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7684361-strategy-director": {
+        "title": "Strategy Director Berlin",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7660871-junior-motion-designer": {
+        "title": "Junior Motion Designer New York",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7655280-design-director": {
+        "title": "Design Director Sydney",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7637524-growth-director": {
+        "title": "Growth Director Los Angeles",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7461227-senior-designer": {
+        "title": "Senior Designer Los Angeles",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7436356-pr-social-media-director": {
+        "title": "PR & Social Media Director London",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7436679-senior-designer": {
+        "title": "Senior Designer Berlin",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7436627-client-director-german-speaking": {
+        "title": "Client Director (German Speaking) Berlin",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7436596-design-director": {
+        "title": "Design Director Berlin",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/5545901-senior-designer": {
+        "title": "Senior Designer New York",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/7375827-staff-brand-motion-designer": {
+        "title": "Staff Brand & Motion Designer London",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/5599537-copywriter": {
+        "title": "Copywriter New York",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/6904947-client-director": {
+        "title": "Client Director London",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/6858283-internship-enquiries": {
+        "title": "Internship Enquiries London",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      },
+      "https://koto.com/careers/5929134-design-director": {
+        "title": "Design Director London",
+        "first_seen": "2026-05-10T00:23:12+00:00"
+      }
+    }
   }
 }
