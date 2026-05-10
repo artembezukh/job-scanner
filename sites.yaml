@@ -38,6 +38,55 @@ sites:
     render: js
     wait_selector: "a.job-title-link"
 
+  # --- London marketing / PR / creative agencies ---
+
+  # Greenhouse boards
+  - name: FGS Global
+    url: https://boards.greenhouse.io/fgsglobal
+    selector: "tr.job-post a"
+
+  - name: Ogilvy Social.Lab
+    url: https://boards.greenhouse.io/sociallab
+    selector: "tr.job-post a"
+
+  - name: Omnicom Media Group UK
+    url: https://boards.greenhouse.io/omguk
+    selector: "tr.job-post a"
+
+  - name: GTB (Group)
+    url: https://boards.greenhouse.io/gtb
+    selector: "tr.job-post a"
+
+  # Teamtailor sites
+  - name: TEAM LEWIS
+    url: https://teamlewis.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
+  - name: Uncovered Group
+    url: https://uncoveredgroup-1688718843.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
+  - name: The Good Marketer
+    url: https://thegoodmarketer-1717071631.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
+  - name: DRPG
+    url: https://drpg.teamtailor.com/
+    selector: "a[href*='/jobs/']"
+
+  # Workable sites (need JS rendering)
+  - name: Biglight
+    url: https://apply.workable.com/biglight/
+    selector: "a[href*='/j/']"
+    render: js
+    wait_selector: "a[href*='/j/']"
+
+  - name: re:act marketing
+    url: https://apply.workable.com/re-act-marketing-ltd/
+    selector: "a[href*='/j/']"
+    render: js
+    wait_selector: "a[href*='/j/']"
+
 # --- Examples (uncomment and edit as needed) ---
 #
 # - name: Anthropic

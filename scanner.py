@@ -140,11 +140,24 @@ def clean_title(text: str) -> str:
     return " ".join(words)
 
 
+def _text_from_aria(el, soup):
+    """Read text of element(s) referenced by aria-labelledby (used by Workable etc.)."""
+    ids = (el.get("aria-labelledby") or "").split()
+    if not ids:
+        return ""
+    first = soup.find(id=ids[0])
+    return " ".join(first.get_text(" ", strip=True).split()) if first else ""
+
+
 def extract_jobs(html, selector, base_url):
     soup = BeautifulSoup(html, "html.parser")
     jobs = {}
     for el in soup.select(selector):
         raw = " ".join(el.get_text(" ", strip=True).split())
+        if not raw:
+            raw = _text_from_aria(el, soup)
+        if not raw and el.get("aria-label"):
+            raw = el.get("aria-label").strip()
         title = clean_title(raw)
         href = el.get("href")
         if not href or not title:
