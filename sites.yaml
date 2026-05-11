@@ -23,6 +23,51 @@
 #   though the site clearly has openings, look for the underlying ATS link
 #   (Greenhouse, Lever, Ashby, Workday, etc.) - those usually serve real HTML.
 
+# Global title filter — any job whose title contains one of these (case-insensitive)
+# will NOT trigger a Telegram notification. It's still recorded in seen.json, so
+# changing this list later won't cause backfill spam.
+#
+# Edit freely. Keywords are matched as substrings on the lowercased title.
+filters:
+  exclude_keywords:
+    # Financial-analysis-type roles
+    - financial analyst
+    - financial analysis
+    - finance director
+    - finance manager
+    - financial controller
+    - fp&a
+    - chief financial
+    - cfo
+
+    # Media-planning / media-buying roles
+    # (kept tight to avoid matching "social media" jobs)
+    - media planner
+    - media planning
+    - media buyer
+    - media buying
+    - paid media
+    - programmatic
+    - comms planner
+    - media account
+    - media director
+    # NOTE: not adding "media manager" / "media strategist" because they often
+    # refer to social-media roles, which the user does want.
+
+    # Roles that typically require > 5 years experience
+    # (best-effort - inferred from title seniority since the scraper
+    # only sees titles, not full descriptions)
+    - vice president
+    - vp
+    - svp
+    - evp
+    - chief
+    - head of
+    - global head
+    - group head
+    - director           # broad, but most "Director" agency roles are 5+ yrs
+    - principal
+
 sites:
   - name: Ogilvy UK
     url: https://job-boards.greenhouse.io/ogilvyuk

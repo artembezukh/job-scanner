@@ -39,6 +39,36 @@ def load_sites():
     return data.get("sites") or []
 
 
+def load_filters():
+    with open(SITES_FILE) as f:
+        data = yaml.safe_load(f) or {}
+    f_cfg = data.get("filters") or {}
+    return [str(s).lower() for s in (f_cfg.get("exclude_keywords") or [])]
+
+
+_EXCL_PAT_CACHE = {}
+
+
+def is_excluded(title, excludes):
+    """Return the matched keyword if title should be excluded, else None.
+
+    Matches each keyword as a whole-word substring (word boundaries) so
+    'media' won't match inside 'multimedia' and 'vp' won't match 'svp'.
+    """
+    import re
+    t = title.lower()
+    for kw in excludes:
+        if not kw:
+            continue
+        pat = _EXCL_PAT_CACHE.get(kw)
+        if pat is None:
+            pat = re.compile(r"(?<![\w&])" + re.escape(kw) + r"(?![\w&])")
+            _EXCL_PAT_CACHE[kw] = pat
+        if pat.search(t):
+            return kw
+    return None
+
+
 def load_seen():
     if SEEN_FILE.exists():
         text = SEEN_FILE.read_text().strip()
@@ -198,7 +228,8 @@ def telegram_send(text):
             print(f"Telegram error {r.status_code}: {r.text}", file=sys.stderr)
 
 
-def scan_site(site, seen):
+def scan_site(site, seen, excludes=None):
+    excludes = excludes or []
     name = site["name"]
     url = site["url"]
     selector = site["selector"]
@@ -271,17 +302,33 @@ def scan_site(site, seen):
 
     known = site_seen["jobs"]
     new_links = [l for l in current if l not in known]
+    # Always record everything in seen.json (so changing filters doesn't re-notify history)
     for link in new_links:
         known[link] = {"title": current[link], "first_seen": now()}
 
-    if new_links:
+    # Apply title filter: drop anything matching an exclude keyword
+    notify_links = []
+    filtered_out = 0
+    for link in new_links:
+        match = is_excluded(current[link], excludes)
+        if match:
+            filtered_out += 1
+            print(f"  filtered: {current[link][:60]!r} (matched {match!r})")
+        else:
+            notify_links.append(link)
+
+    if notify_links:
         lines = [f"<b>New jobs at {escape(name)}</b>", ""]
-        for link in new_links:
+        for link in notify_links:
             lines.append(f'- <a href="{escape(link)}">{escape(current[link])}</a>')
         telegram_send("\n".join(lines))
-        print(f"  {len(new_links)} new (of {len(current)} total)")
+        print(f"  {len(notify_links)} new pinged "
+              f"(of {len(current)} total, {len(new_links)} new, {filtered_out} filtered)")
     else:
-        print(f"  no new (of {len(current)} total)")
+        if new_links:
+            print(f"  no pings - all {len(new_links)} new were filtered out")
+        else:
+            print(f"  no new (of {len(current)} total)")
 
 
 def main():
@@ -290,12 +337,16 @@ def main():
         print("No sites configured. Edit sites.yaml to add some.")
         return
 
+    excludes = load_filters()
+    if excludes:
+        print(f"Filtering out titles containing any of: {excludes}\n")
+
     seen = load_seen()
     for i, site in enumerate(sites):
         if i > 0:
             time.sleep(1)
         try:
-            scan_site(site, seen)
+            scan_site(site, seen, excludes=excludes)
         except Exception as e:
             print(f"  unexpected error on '{site.get('name', '?')}': {e}", file=sys.stderr)
 
