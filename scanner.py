@@ -43,10 +43,24 @@ def load_filters():
     with open(SITES_FILE) as f:
         data = yaml.safe_load(f) or {}
     f_cfg = data.get("filters") or {}
-    return [str(s).lower() for s in (f_cfg.get("exclude_keywords") or [])]
+    return {
+        "exclude_keywords": [str(s).lower() for s in (f_cfg.get("exclude_keywords") or [])],
+        "ambiguous_seniority_keywords": [str(s).lower() for s in (f_cfg.get("ambiguous_seniority_keywords") or [])],
+        "max_years": int(f_cfg.get("max_years", 5)),
+    }
 
+
+import re as _re
 
 _EXCL_PAT_CACHE = {}
+
+
+def _kw_pattern(kw):
+    pat = _EXCL_PAT_CACHE.get(kw)
+    if pat is None:
+        pat = _re.compile(r"(?<![\w&])" + _re.escape(kw) + r"(?![\w&])")
+        _EXCL_PAT_CACHE[kw] = pat
+    return pat
 
 
 def is_excluded(title, excludes):
@@ -55,18 +69,69 @@ def is_excluded(title, excludes):
     Matches each keyword as a whole-word substring (word boundaries) so
     'media' won't match inside 'multimedia' and 'vp' won't match 'svp'.
     """
-    import re
     t = title.lower()
     for kw in excludes:
-        if not kw:
-            continue
-        pat = _EXCL_PAT_CACHE.get(kw)
-        if pat is None:
-            pat = re.compile(r"(?<![\w&])" + re.escape(kw) + r"(?![\w&])")
-            _EXCL_PAT_CACHE[kw] = pat
-        if pat.search(t):
+        if kw and _kw_pattern(kw).search(t):
             return kw
     return None
+
+
+def matches_ambiguous(title, ambiguous):
+    """Return the matched ambiguous keyword (or None)."""
+    t = title.lower()
+    for kw in ambiguous:
+        if kw and _kw_pattern(kw).search(t):
+            return kw
+    return None
+
+
+# Patterns for explicit years-of-experience requirements in job descriptions.
+# We extract the MINIMUM year value from each match. If min > max_years, filter.
+_YEARS_PATTERNS = [
+    # "minimum 5 years", "at least 7 years", "more than 6 years"
+    _re.compile(r"\b(?:minimum|min|at\s+least|more\s+than|over)\s+(?:of\s+)?(\d+)\+?\s*(?:years?|yrs?)\b", _re.IGNORECASE),
+    # "5+ years", "7+ yrs"
+    _re.compile(r"\b(\d+)\s*\+\s*(?:years?|yrs?)\b", _re.IGNORECASE),
+    # "5-7 years" (take lower bound — that's the minimum)
+    _re.compile(r"\b(\d+)\s*[-–to]+\s*\d+\s*(?:years?|yrs?)\b", _re.IGNORECASE),
+    # "5 to 7 years"
+    _re.compile(r"\b(\d+)\s+to\s+\d+\s*(?:years?|yrs?)\b", _re.IGNORECASE),
+]
+
+
+def fetch_description_text(url, render_js=False):
+    """Fetch a single job page and return cleaned visible text (truncated)."""
+    try:
+        html = fetch_js(url, wait_ms=2500) if render_js else fetch(url)
+    except Exception as e:
+        print(f"    desc-fetch failed for {url[:80]}: {e}", file=sys.stderr)
+        return ""
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup(["script", "style"]):
+        tag.decompose()
+    return " ".join(soup.get_text(" ", strip=True).split())[:30000]
+
+
+def description_requires_more_than(url, max_years, render_js=False):
+    """Return True only if description EXPLICITLY states required years > max_years.
+
+    Defaults to False on any ambiguity (empty text, no year pattern, etc).
+    This is the bias-toward-keep design — better false-positive than false-negative.
+    """
+    text = fetch_description_text(url, render_js=render_js)
+    if not text:
+        return False
+    min_years_found = None
+    for pat in _YEARS_PATTERNS:
+        for m in pat.finditer(text):
+            try:
+                yrs = int(m.group(1))
+            except (ValueError, IndexError):
+                continue
+            # Track the smallest minimum we see — that's the floor
+            if min_years_found is None or yrs < min_years_found:
+                min_years_found = yrs
+    return min_years_found is not None and min_years_found > max_years
 
 
 def load_seen():
@@ -228,8 +293,11 @@ def telegram_send(text):
             print(f"Telegram error {r.status_code}: {r.text}", file=sys.stderr)
 
 
-def scan_site(site, seen, excludes=None):
-    excludes = excludes or []
+def scan_site(site, seen, filters=None):
+    filters = filters or {"exclude_keywords": [], "ambiguous_seniority_keywords": [], "max_years": 5}
+    excludes = filters.get("exclude_keywords", [])
+    ambiguous = filters.get("ambiguous_seniority_keywords", [])
+    max_years = filters.get("max_years", 5)
     name = site["name"]
     url = site["url"]
     selector = site["selector"]
@@ -306,27 +374,47 @@ def scan_site(site, seen, excludes=None):
     for link in new_links:
         known[link] = {"title": current[link], "first_seen": now()}
 
-    # Apply title filter: drop anything matching an exclude keyword
+    # Two-tier filter:
+    # 1. Hard title-keyword exclusions (instant drop)
+    # 2. Ambiguous-seniority keywords → fetch description, drop only if explicit > max_years
     notify_links = []
-    filtered_out = 0
+    dropped_title = 0
+    dropped_desc = 0
+    is_js_site = render in ("js", "playwright", "browser")
     for link in new_links:
-        match = is_excluded(current[link], excludes)
+        title = current[link]
+        match = is_excluded(title, excludes)
         if match:
-            filtered_out += 1
-            print(f"  filtered: {current[link][:60]!r} (matched {match!r})")
-        else:
-            notify_links.append(link)
+            dropped_title += 1
+            print(f"  filtered (title): {title[:60]!r} matched {match!r}")
+            continue
+        amb = matches_ambiguous(title, ambiguous)
+        if amb:
+            print(f"  checking description for {title[:60]!r} (ambiguous: {amb!r})...")
+            try:
+                too_senior = description_requires_more_than(link, max_years, render_js=is_js_site)
+            except Exception as e:
+                print(f"    desc check errored, defaulting to KEEP: {e}", file=sys.stderr)
+                too_senior = False
+            if too_senior:
+                dropped_desc += 1
+                print(f"    dropped: description explicitly requires > {max_years} years")
+                continue
+            else:
+                print(f"    keeping: description does not explicitly exceed {max_years} years")
+        notify_links.append(link)
 
     if notify_links:
         lines = [f"<b>New jobs at {escape(name)}</b>", ""]
         for link in notify_links:
             lines.append(f'- <a href="{escape(link)}">{escape(current[link])}</a>')
         telegram_send("\n".join(lines))
-        print(f"  {len(notify_links)} new pinged "
-              f"(of {len(current)} total, {len(new_links)} new, {filtered_out} filtered)")
+        print(f"  {len(notify_links)} pinged (of {len(new_links)} new; "
+              f"{dropped_title} dropped by title, {dropped_desc} by description)")
     else:
         if new_links:
-            print(f"  no pings - all {len(new_links)} new were filtered out")
+            print(f"  no pings — all {len(new_links)} new were filtered "
+                  f"({dropped_title} by title, {dropped_desc} by description)")
         else:
             print(f"  no new (of {len(current)} total)")
 
@@ -337,16 +425,21 @@ def main():
         print("No sites configured. Edit sites.yaml to add some.")
         return
 
-    excludes = load_filters()
-    if excludes:
-        print(f"Filtering out titles containing any of: {excludes}\n")
+    filters = load_filters()
+    if filters["exclude_keywords"]:
+        print(f"Hard-exclude title keywords ({len(filters['exclude_keywords'])}): "
+              f"{filters['exclude_keywords']}")
+    if filters["ambiguous_seniority_keywords"]:
+        print(f"Ambiguous-seniority keywords (fetch description, max_years={filters['max_years']}): "
+              f"{filters['ambiguous_seniority_keywords']}")
+    print()
 
     seen = load_seen()
     for i, site in enumerate(sites):
         if i > 0:
             time.sleep(1)
         try:
-            scan_site(site, seen, excludes=excludes)
+            scan_site(site, seen, filters=filters)
         except Exception as e:
             print(f"  unexpected error on '{site.get('name', '?')}': {e}", file=sys.stderr)
 
