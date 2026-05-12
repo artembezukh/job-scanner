@@ -339,6 +339,14 @@ sites:
     render: js
     wait_selector: "a[href*='/j/']"
 
+  - name: Socially Powerful
+    url: https://ats.rippling.com/en-CA/socially-powerful/jobs
+    selector: "a[font-size]"
+
+  - name: Momentum Worldwide
+    url: https://boards.greenhouse.io/embed/job_board?for=momentumww
+    selector: "tr.job-post a"
+
 # --- Examples (uncomment and edit as needed) ---
 #
 # - name: Anthropic
